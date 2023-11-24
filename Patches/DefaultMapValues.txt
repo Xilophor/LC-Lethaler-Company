@@ -1,0 +1,23 @@
+
+Experimentation -   [Info   : Unity Log] Landmine; -0.003082275_0 0.8171924_1.748332 1.000219_11.761
+                    [Info   : Unity Log] TurretContainer; 0_0 0.919029_1.000575 1.003843_7.198681
+
+
+Assurance -         [Info   : Unity Log] Landmine; 0_0 0.9031903_3.208496 1.000219_7.182892
+                    [Info   : Unity Log] TurretContainer; 0_0 0.004669428_1.031176 0.9996963_10.96767
+
+Vow -               [Info   : Unity Log] TurretContainer; 0_0 0.9286923_1.0711 1.000219_7.498623
+                    [Info   : Unity Log] Landmine; 0_0 0.9410219_1.308152 1.000219_20.20682
+
+Offense -           [Info   : Unity Log] Landmine; 0_0 0.7095566_5.147392 1.000219_15.95197
+                    [Info   : Unity Log] TurretContainer; 0_0 0.5882335_2.459971 1_8.799982
+
+March -             [Info   : Unity Log] Landmine; 0_0 0.9164667_6.925446 1.000219_14.79918
+                    [Info   : Unity Log] TurretContainer; 0_0 0.8937739_3.346198 0.9998779_15.09235
+
+Rend -              [Info   : Unity Log] Landmine; 0_0 0.8802527_1.170768 0.9995394_3.24081
+
+Dane -              [Info   : Unity Log] Landmine; 0_7 0.7629321_15.2455 1_35
+                    [Info   : Unity Log] TurretContainer; 0_3 0.2101234_3.974357 0.8229997_7.052885 1_18
+
+Titan -             
