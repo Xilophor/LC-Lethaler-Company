@@ -71,7 +71,7 @@ namespace LethalerCompany
 
         private const string pluginGUID = "Xilophor.LethalerCompany";
         private const string pluginName = "LethalerCompany";
-        private const string pluginVersion = "0.2.0";
+        private const string pluginVersion = "0.3.0";
 
         private static readonly Harmony harmony = new(pluginGUID);
 
