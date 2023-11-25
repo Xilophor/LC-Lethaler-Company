@@ -11,7 +11,7 @@ namespace LethalerComanpany.Patches
             Removes any weather info in the Map Info.
         */
         [HarmonyPatch(typeof(TimeOfDay), "Awake")]
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         private static void ChangeQuotaVariables(ref QuotaSettings ___quotaVariables)
         {
             ___quotaVariables.startingQuota = Plugin.Instance.startingQuota.Value;

@@ -27,6 +27,7 @@ namespace LethalerCompany
             harmony.PatchAll(typeof(HarderQuotasPatch));
             harmony.PatchAll(typeof(DunGenPatch));
             harmony.PatchAll(typeof(SpringManPatch));
+            harmony.PatchAll(typeof(EnemySpawnPatch));
 
             mls.LogInfo($"{pluginGUID} loaded");
         }

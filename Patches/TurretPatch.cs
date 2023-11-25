@@ -15,7 +15,7 @@ namespace LethalerComanpany.Patches
 
 
         /*
-            Increases the Detection Range of Turrets
+            Increases the Detection/Movement Range of Turrets
         */
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
@@ -23,28 +23,6 @@ namespace LethalerComanpany.Patches
         {
             __instance.rotationRange = Mathf.Abs(55f); //Default: 45f
         }
-
-        /*
-            Increases the Movement Range of Turrets
-        
-        [HarmonyPatch("SwitchRotationOnInterval")]
-        [HarmonyPostfix]
-        static void IncreaseMovementRange(Turret __instance)
-        {
-            __instance.targetRotation *= movementRangeMultiplier; //Based off of detection range (55f)if (this.rotatingSmoothly)
-		
-        }*/
-        // Have to increase the clamp range as well, otherwise it gets clamped and just stays on the extremes longer
-        /*[HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void IncreaseClampRange(Turret __instance, bool ___rotatingSmoothly, bool ___rotatingClockwise)
-        {
-            if (___rotatingClockwise) return;
-            if (___rotatingSmoothly)
-			    __instance.turnTowardsObjectCompass.localEulerAngles = new Vector3(-180f, Mathf.Clamp(__instance.targetRotation, -__instance.rotationRange * movementRangeMultiplier, __instance.rotationRange * movementRangeMultiplier), 180f);
-
-            __instance.turretRod.rotation = Quaternion.RotateTowards(__instance.turretRod.rotation, __instance.turnTowardsObjectCompass.rotation, __instance.rotationSpeed * Time.deltaTime);
-        }*/
 
         /*
             Decreases the Charging time to fire quicker.
@@ -56,14 +34,13 @@ namespace LethalerComanpany.Patches
             bool foundMassUsageMethod = false;
             int startIndexA = -1;
             int endIndexA = -1;
-            int indexB = -1;
-            int returnIndex = -1;
 
             // Find the Section of IL to Modify
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {
-                if(codes[i].opcode == OpCodes.Ldarg_0 && !foundMassUsageMethod)
+                if (foundMassUsageMethod) break;
+                if(codes[i].opcode == OpCodes.Ldarg_0)
                 {
                     startIndexA = i+1;
 
@@ -80,22 +57,6 @@ namespace LethalerComanpany.Patches
                         }
                     }
                 }
-                //Check for Return code after and if not at end of function (only happens once) 
-                else if(codes[i].opcode == OpCodes.Callvirt && codes[i+1].opcode == OpCodes.Ret && codes.Count > i+2)
-                {
-                    indexB = i+2;
-
-                    for (int j = indexB; j < codes.Count; j++)
-                    {
-                        //Locate Return Instruction
-                        if (codes[j].opcode == OpCodes.Ret)
-                        {
-                            returnIndex = j;
-                            break;
-                        }
-                    }
-                    break;
-                }
             }
 
             //Modify the Charging Time
@@ -111,21 +72,8 @@ namespace LethalerComanpany.Patches
                 }
             }
 
-            //Skip the MovementUpdate for Smooth Movement to allow reimplementation for wider clamping
-            /*Debug.Log(indexB + ", " + returnIndex);
-            if(indexB > -1 && returnIndex > -1)
-            {
-                Label jumpTarget = ilGenerator.DefineLabel();
-
-                codes[returnIndex] = CodeInstructionExtensions.WithLabels(codes[returnIndex], jumpTarget);
-
-                codes.Insert(indexB, new CodeInstruction(OpCodes.Br,jumpTarget)); //Skip to End CodeInstructionExtensions.WithLabels(new CodeInstruction(OpCodes.Br_S), codes)
-            }*/
-
             return codes.AsEnumerable();
         }
-    
-    static readonly float movementRangeMultiplier = 1.727f;
 
     }
 }
