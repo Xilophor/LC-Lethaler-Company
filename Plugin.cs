@@ -11,16 +11,6 @@ namespace LethalerCompany
     public class Plugin : BaseUnityPlugin
     {
 
-        private const string pluginGUID = "Xilophor.LethalerCompany";
-        private const string pluginName = "LethalerCompany";
-        private const string pluginVersion = "0.2.0";
-
-        private static readonly Harmony harmony = new(pluginGUID);
-
-        public static Plugin Instance;
-
-        public ManualLogSource mls;
-
         private void Awake()
         {
             if (Instance == null)
@@ -36,8 +26,9 @@ namespace LethalerCompany
             harmony.PatchAll(typeof(TurretPatch));
             harmony.PatchAll(typeof(HarderQuotasPatch));
             harmony.PatchAll(typeof(DunGenPatch));
+            harmony.PatchAll(typeof(SpringManPatch));
 
-            Logger.LogInfo($"{pluginGUID} loaded");
+            mls.LogInfo($"{pluginGUID} loaded");
         }
 
         private void LoadConfig()
@@ -76,6 +67,16 @@ namespace LethalerCompany
                                                 false,
                                                 "");
         }
+
+        private const string pluginGUID = "Xilophor.LethalerCompany";
+        private const string pluginName = "LethalerCompany";
+        private const string pluginVersion = "0.2.0";
+
+        private static readonly Harmony harmony = new(pluginGUID);
+
+        public static Plugin Instance;
+
+        public ManualLogSource mls;
 
         public ConfigEntry<int> startingQuota;
         public ConfigEntry<int> startingCredits;
