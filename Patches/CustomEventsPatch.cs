@@ -126,7 +126,7 @@ namespace LethalerComanpany.Patches
                         case EventTypes.FlickerLights:
                             if(outageEvent) continue;
 
-                            if (eventRandom.Next(0,199) < 9 && hasFlickered)
+                            if (eventRandom.Next(0,99) < 9 && hasFlickered)
                             {
                                 int timeToOccur = eventRandom.Next((int)(2f+timeOffset),(int)(__instance.timeScript.lengthOfHours * (float)__instance.hourTimeBetweenEnemySpawnBatches + timeOffset));
                                 EventTimes.Add(timeToOccur, EventTypes.PowerOutage);
@@ -207,7 +207,7 @@ namespace LethalerComanpany.Patches
 
         enum EventTypes { None, FlickerLights, PowerOutage };
         static readonly Dictionary<EventTypes, int> eventChances = new() {
-            {EventTypes.FlickerLights, 100}
+            {EventTypes.FlickerLights, 18}
             }; // Chance out of 100
     }
 }
