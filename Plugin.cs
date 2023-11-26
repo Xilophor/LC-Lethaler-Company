@@ -7,6 +7,7 @@ using LethalerComanpany.Patches;
 namespace LethalerCompany
 {
     [BepInPlugin(pluginGUID, pluginName, pluginVersion)]
+    [BepInDependency("LC_API")]
     [BepInProcess("Lethal Company.exe")]
     public class Plugin : BaseUnityPlugin
     {

@@ -6,7 +6,10 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalerCompany;
 using UnityEngine;
+using LC_API.ServerAPI;
+using Newtonsoft.Json;
 using Random = System.Random;
+
 
 
 namespace LethalerComanpany.Patches
@@ -31,7 +34,45 @@ namespace LethalerComanpany.Patches
                 evntC = gameObject.AddComponent<EventCoroutine>();
             }
         }
+        
+        #nullable enable
+        private static (Dictionary<int, EventTypes>, List<int>, string) Parse(Dictionary<int, EventTypes>? eventTimes = null, List<int>? occurTimes = null, string? serverEvent = null)
+        {
+            Dictionary<int, EventTypes> eventTimesVal; List<int> occurTimesVal; string serverEventVal;
 
+            if (serverEvent != null)
+            {
+                string[] collections = serverEvent.Split("|");
+                eventTimesVal = (Dictionary<int, EventTypes>)JsonConvert.DeserializeObject(collections[0])!;
+                occurTimesVal = (List<int>)JsonConvert.DeserializeObject(collections[1])!;
+                serverEventVal = serverEvent;
+            }
+            else
+            {
+                eventTimesVal = eventTimes ?? new();
+                occurTimesVal = occurTimes ?? new();
+                serverEventVal = JsonConvert.SerializeObject(eventTimesVal) + "|" + JsonConvert.SerializeObject(occurTimesVal);
+            }
+
+            return (eventTimesVal, occurTimesVal, serverEventVal);
+        }
+        #nullable disable
+
+        private static void SendEventsToClients() {
+            (_, _, string jsonData) = Parse(EventTimes, occuranceTimes);
+
+            Networking.Broadcast(jsonData, eventSignature);
+        }
+
+        private static void ReceivedEventsFromServer(string data, string signature) {
+            if (signature == eventSignature)
+            {
+                EventTimes.Clear();
+                occuranceTimes.Clear();
+                currentEventIndex = 0;
+                (EventTimes, occuranceTimes, _) = Parse(null, null, data);
+            }
+        }
 
 
         [HarmonyPatch(typeof(RoundManager), "Update")]
@@ -70,8 +111,6 @@ namespace LethalerComanpany.Patches
         [HarmonyPostfix]
         private static void ResetVariables(RoundManager __instance)
         {
-            if (!__instance.IsServer) return;
-
             mls.LogInfo("Resetting Event variables");
 
             hasFlickered = false;
@@ -87,7 +126,7 @@ namespace LethalerComanpany.Patches
         */
         [HarmonyPatch(typeof(RoundManager), "AdvanceHourAndSpawnNewBatchOfEnemies")]
         [HarmonyPostfix]
-        private static void CauseEvents(RoundManager __instance, int ___currentHour)
+        private static void PlanEvents(RoundManager __instance, int ___currentHour)
         {
             if (!__instance.IsServer) return;
 
@@ -109,7 +148,7 @@ namespace LethalerComanpany.Patches
                 currentEventIndex = 0;
             }
 
-            mls.LogInfo("Causing Events");
+            mls.LogInfo("Planning Events");
 
             float timeOffset = __instance.timeScript.lengthOfHours * (float)___currentHour;
 
@@ -159,6 +198,9 @@ namespace LethalerComanpany.Patches
                     mls.LogInfo("Event " + evnt.Key + " chosen to happen " + i + " times");
                 }
             }
+
+            // Send Data to Clients
+            SendEventsToClients();
         }
 
         static IEnumerator PowerOutage(RoundManager __instance)
@@ -208,6 +250,9 @@ namespace LethalerComanpany.Patches
         static int currentEventIndex;
         static LungProp apparatice;
 
+        static readonly string eventSignature = "xilohor.lethalercompany.events";
+        Networking.GotStringEventDelegate recieve = ReceivedEventsFromServer;
+
         static List<int> occuranceTimes;
         static Dictionary<int, EventTypes> EventTimes { get; set; }
 
@@ -216,4 +261,4 @@ namespace LethalerComanpany.Patches
             {EventTypes.FlickerLights, 0.18d}
             }; // Chance out of 1
     }
-}
+} // TODO: add check for lights & add outdoor lights to flicker
