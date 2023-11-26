@@ -13,7 +13,7 @@ namespace LethalerComanpany.Patches
         */
         [HarmonyPatch(typeof(SpringManAI), MethodType.Constructor)]
         [HarmonyPostfix]
-        static void UpdateVariables(SpringManAI __instance, ref float ___currentChaseSpeed, ref float ___currentAnimSpeed)
+        static void UpdateVariables(ref SpringManAI __instance, ref float ___currentChaseSpeed, ref float ___currentAnimSpeed)
         {
             float multiplier = (float)(System.Math.Round(Random.Range(targetChaseSpeed - 0.75f,targetChaseSpeed + 0.5f)*10f)/10f /14.5f); // Random Target Speed / Normal Speed (14.5f)
 
