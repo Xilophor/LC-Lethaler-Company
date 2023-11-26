@@ -21,8 +21,7 @@ namespace LethalerCompany
             mls = BepInEx.Logging.Logger.CreateLogSource(pluginGUID);
 
             // Individually Patch to Allow De-Conflicting with other Patches
-            if(WeatherDisabled.Value) harmony.PatchAll(typeof(NoWeatherPatch));
-            if(Invincibility.Value && pluginVersion.Split('.')[0] != "1") harmony.PatchAll(typeof(InvincibilityPatch)); // For Testing Only
+            if(WeatherDisabled.Value) harmony.PatchAll(typeof(NoWeatherPatch));// For Testing Only
             harmony.PatchAll(typeof(TurretPatch));
             harmony.PatchAll(typeof(HarderQuotasPatch));
             harmony.PatchAll(typeof(DunGenPatch));
@@ -63,11 +62,11 @@ namespace LethalerCompany
             
 
             
-            if(pluginVersion.Split('.')[0] != "1") 
+            /*if(pluginVersion.Split('.')[0] != "1") 
                 Invincibility = Config.Bind("Other",
                                                 "Invincibility",
                                                 false,
-                                                "");
+                                                "");*/
         }
 
         private const string pluginGUID = "Xilophor.LethalerCompany";
@@ -88,6 +87,6 @@ namespace LethalerCompany
         public ConfigEntry<float> randomizerMultiplier;
 
         private ConfigEntry<bool> WeatherDisabled;
-        private ConfigEntry<bool> Invincibility;
+        //private ConfigEntry<bool> Invincibility;
     }
 }
