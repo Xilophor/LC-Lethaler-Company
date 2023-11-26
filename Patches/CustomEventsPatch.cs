@@ -115,7 +115,7 @@ namespace LethalerComanpany.Patches
 
             foreach (var evnt in eventChances)
             {
-                if(eventRandom.Next(0,99) < evnt.Value)
+                if(eventRandom.NextDouble() < evnt.Value)
                 {
                     int minAmount = 1;
                     int maxAmount = 1;
@@ -126,7 +126,7 @@ namespace LethalerComanpany.Patches
                         case EventTypes.FlickerLights:
                             if(outageEvent) continue;
 
-                            if (eventRandom.Next(0,99) < 9 && hasFlickered)
+                            if (eventRandom.NextDouble() < 0.09d && hasFlickered)
                             {
                                 int timeToOccur = eventRandom.Next((int)(2f+timeOffset),(int)(__instance.timeScript.lengthOfHours * (float)__instance.hourTimeBetweenEnemySpawnBatches + timeOffset));
                                 EventTimes.Add(timeToOccur, EventTypes.PowerOutage);
@@ -193,6 +193,12 @@ namespace LethalerComanpany.Patches
             hasFlickered = true;
             yield break;
         }
+        
+        static IEnumerator BurstPipes(RoundManager __instance)
+        {
+            mls.LogInfo("Bursting Pipes at "+ __instance.timeScript.currentDayTime);
+            yield break;
+        }
 
         static readonly ManualLogSource mls = Plugin.Instance.mls;
         static Random eventRandom;
@@ -205,9 +211,9 @@ namespace LethalerComanpany.Patches
         static List<int> occuranceTimes;
         static Dictionary<int, EventTypes> EventTimes { get; set; }
 
-        enum EventTypes { None, FlickerLights, PowerOutage };
-        static readonly Dictionary<EventTypes, int> eventChances = new() {
-            {EventTypes.FlickerLights, 18}
-            }; // Chance out of 100
+        enum EventTypes { None, FlickerLights, PowerOutage, BurstPipes };
+        static readonly Dictionary<EventTypes, double> eventChances = new() {
+            {EventTypes.FlickerLights, 0.18d}
+            }; // Chance out of 1
     }
 }
