@@ -61,7 +61,7 @@ namespace LethalerCompany
                                                 "Disables weather info in Moons list and on the Map Screen. Change this if you want to hide weather info. Will override inaccurate weather.");
             
             WeatherInaccurate = Config.Bind("Weather",
-                                                "Inacurrate Weather Forecast",
+                                                "Inaccurate Weather Forecast",
                                                 true,
                                                 "Weather forecasting isn't always accurate - the company will sometimes report incorrect weather information.");
             WeatherAccuracyRate = Config.Bind("Weather",
