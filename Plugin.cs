@@ -21,7 +21,8 @@ namespace LethalerCompany
             mls = BepInEx.Logging.Logger.CreateLogSource(pluginGUID);
 
             // Individually Patch to Allow De-Conflicting with other Patches
-            if(WeatherDisabled.Value) harmony.PatchAll(typeof(NoWeatherPatch));// For Testing Only
+            if(WeatherDisabled.Value) harmony.PatchAll(typeof(NoWeatherPatch));
+            if(WeatherInaccurate.Value && !WeatherDisabled.Value) harmony.PatchAll(typeof(InaccurateWeatherPatch));
             harmony.PatchAll(typeof(TurretPatch));
             harmony.PatchAll(typeof(HarderQuotasPatch));
             harmony.PatchAll(typeof(DunGenPatch));
@@ -54,12 +55,19 @@ namespace LethalerCompany
                                                 1.15f);
 
 
-            WeatherDisabled = Config.Bind("Other",
-                                                "NoWeatherInfo",
+            WeatherDisabled = Config.Bind("Weather",
+                                                "No Weather Info",
+                                                false,
+                                                "Disables weather info in Moons list and on the Map Screen. Change this if you want to hide weather info. Will override inaccurate weather.");
+            
+            WeatherInaccurate = Config.Bind("Weather",
+                                                "Inacurrate Weather Forecast",
                                                 true,
-                                                "Disables weather info in Moons list and on the Map Screen. Change this if you want weather info.");
-            
-            
+                                                "Weather forecasting isn't always accurate - the company will sometimes report incorrect weather information.");
+            WeatherAccuracyRate = Config.Bind("Weather",
+                                                "Forecast Accuracy Percentage",
+                                                72f,
+                                                "This decides how accurate the company will be at forecasting the weather.");
 
             
             /*if(pluginVersion.Split('.')[0] != "1") 
@@ -71,7 +79,7 @@ namespace LethalerCompany
 
         private const string pluginGUID = "Xilophor.LethalerCompany";
         private const string pluginName = "LethalerCompany";
-        private const string pluginVersion = "0.3.0";
+        private const string pluginVersion = "0.4.0";
 
         private static readonly Harmony harmony = new(pluginGUID);
 
@@ -87,6 +95,8 @@ namespace LethalerCompany
         public ConfigEntry<float> randomizerMultiplier;
 
         private ConfigEntry<bool> WeatherDisabled;
+        private ConfigEntry<bool> WeatherInaccurate;
+        public ConfigEntry<float> WeatherAccuracyRate;
         //private ConfigEntry<bool> Invincibility;
     }
 }
