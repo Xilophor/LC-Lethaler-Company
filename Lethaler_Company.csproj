@@ -28,9 +28,6 @@
     <Reference Include="ClientNetworkTransform">
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\ClientNetworkTransform.dll</HintPath>
     </Reference>
-    <Reference Include="LC_API">
-      <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins\LC_API.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Netcode.Runtime">
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
     </Reference>
@@ -38,4 +35,8 @@
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="cd D:\NetcodePatcher&#xD;&#xA;NetcodePatcher.dll $(TargetDir) deps/" />
+  </Target>
 </Project>

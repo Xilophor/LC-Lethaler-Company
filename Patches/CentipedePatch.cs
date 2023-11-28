@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch(typeof(CentipedeAI))]
     public class CentipedePatch

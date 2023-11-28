@@ -1,16 +1,37 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using LethalerComanpany.Patches;
+using LethalerCompany;
+using LethalerCompany.Patches;
+using UnityEngine;
 
 namespace LethalerCompany
 {
     [BepInPlugin(pluginGUID, pluginName, pluginVersion)]
-    [BepInDependency("LC_API")]
     [BepInProcess("Lethal Company.exe")]
     public class Plugin : BaseUnityPlugin
     {
+
+        private void NetcodeWeaver()
+        {
+            var types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (var type in types)
+            {
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var method in methods)
+                {
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0)
+                    {
+                        method.Invoke(null, null);
+                    }
+                }
+            }
+
+            //NetworkGenerator.Init();
+        }
 
         private void Awake()
         {
@@ -21,6 +42,7 @@ namespace LethalerCompany
 
             mls = BepInEx.Logging.Logger.CreateLogSource(pluginGUID);
 
+
             // Individually Patch to Allow De-Conflicting with other Patches
             if(WeatherDisabled.Value) harmony.PatchAll(typeof(NoWeatherPatch));
             if(WeatherInaccurate.Value && !WeatherDisabled.Value) harmony.PatchAll(typeof(InaccurateWeatherPatch));
@@ -30,6 +52,11 @@ namespace LethalerCompany
             harmony.PatchAll(typeof(SpringManPatch));
             harmony.PatchAll(typeof(EnemySpawnPatch));
             harmony.PatchAll(typeof(CustomEventsPatch));
+
+            // Initialize Patch for Mod Network Handler
+            harmony.PatchAll(typeof(NetworkGenerator));
+
+            NetcodeWeaver(); //Initialize NetworkPatch
 
             mls.LogInfo($"{pluginGUID} loaded");
         }

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using BepInEx.Logging;
 using HarmonyLib;
 using LethalerCompany;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using Object = UnityEngine.Object;
 using Random = System.Random;
 
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class DunGenPatch
@@ -36,20 +37,13 @@ namespace LethalerComanpany.Patches
                 mls.LogDebug(spawnableObject.prefabToSpawn.name + ";" + text);
             }
 
-            return true;
-        }
-
-        [HarmonyPatch(typeof(RoundManager), MethodType.Constructor)]
-        [HarmonyPostfix]
-        private static void ChangeRoundManagerFields(RoundManager __instance)
-        {
-            if (!__instance.IsHost) return;
-
-            __instance.scrapValueMultiplier = 1.15f;
-            __instance.scrapAmountMultiplier = 1.3f;
-            __instance.mapSizeMultiplier = 1.1f;
+            __instance.scrapValueMultiplier *= 1.15f;
+            __instance.scrapAmountMultiplier *= 1.3f;
+            __instance.mapSizeMultiplier *= 1.1f;
 
             mls.LogDebug(string.Format("Changed multipliers to scrapVal: {0}x, scrapAmnt: {1}x, mapSize: {2}x", __instance.scrapValueMultiplier, __instance.scrapAmountMultiplier, __instance.mapSizeMultiplier));
+
+            return true;
         }
 
         // Add (more) Quicksand patches at start of round for rainy and stormy weather

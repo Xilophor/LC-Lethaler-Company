@@ -7,7 +7,7 @@ using System;
 using TMPro;
 using MonoMod.Cil;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch(typeof(Turret))]
     public class TurretPatch

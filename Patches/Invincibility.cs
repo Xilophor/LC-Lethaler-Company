@@ -1,7 +1,7 @@
 using HarmonyLib;
 using GameNetcodeStuff;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class InvincibilityPatch

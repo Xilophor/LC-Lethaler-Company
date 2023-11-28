@@ -6,7 +6,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LethalerCompany;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class InaccurateWeatherPatch

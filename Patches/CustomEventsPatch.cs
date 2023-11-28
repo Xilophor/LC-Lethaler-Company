@@ -1,18 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using BepInEx.Logging;
 using HarmonyLib;
 using LethalerCompany;
 using UnityEngine;
-using LC_API.ServerAPI;
-using Newtonsoft.Json;
 using Random = System.Random;
 
 
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class CustomEventsPatch
@@ -34,43 +30,19 @@ namespace LethalerComanpany.Patches
                 evntC = gameObject.AddComponent<EventCoroutine>();
             }
         }
-        
-        #nullable enable
-        private static (Dictionary<int, EventTypes>, List<int>, string) Parse(Dictionary<int, EventTypes>? eventTimes = null, List<int>? occurTimes = null, string? serverEvent = null)
-        {
-            Dictionary<int, EventTypes> eventTimesVal; List<int> occurTimesVal; string serverEventVal;
+        public static void ReceivedEventsFromServer(EventTypes eventType) {
+            Init();
 
-            if (serverEvent != null)
+            mls.LogInfo("Starting event");
+
+            switch (eventType)
             {
-                string[] collections = serverEvent.Split("|");
-                eventTimesVal = (Dictionary<int, EventTypes>)JsonConvert.DeserializeObject(collections[0])!;
-                occurTimesVal = (List<int>)JsonConvert.DeserializeObject(collections[1])!;
-                serverEventVal = serverEvent;
-            }
-            else
-            {
-                eventTimesVal = eventTimes ?? new();
-                occurTimesVal = occurTimes ?? new();
-                serverEventVal = JsonConvert.SerializeObject(eventTimesVal) + "|" + JsonConvert.SerializeObject(occurTimesVal);
-            }
-
-            return (eventTimesVal, occurTimesVal, serverEventVal);
-        }
-        #nullable disable
-
-        private static void SendEventsToClients() {
-            (_, _, string jsonData) = Parse(EventTimes, occuranceTimes);
-
-            Networking.Broadcast(jsonData, eventSignature);
-        }
-
-        private static void ReceivedEventsFromServer(string data, string signature) {
-            if (signature == eventSignature)
-            {
-                EventTimes.Clear();
-                occuranceTimes.Clear();
-                currentEventIndex = 0;
-                (EventTimes, occuranceTimes, _) = Parse(null, null, data);
+                case EventTypes.FlickerLights:
+                    evntC.StartCoroutine(FlickerLights(RoundManager.Instance));
+                    break;
+                case EventTypes.PowerOutage:
+                    evntC.StartCoroutine(PowerOutage(RoundManager.Instance));
+                    break;
             }
         }
 
@@ -89,19 +61,9 @@ namespace LethalerComanpany.Patches
             }
             if (EventTimes.Count > currentEventIndex && __instance.timeScript.currentDayTime > (float)occuranceTimes[currentEventIndex])
             {
-                Init();
-
                 mls.LogInfo("Starting event");
 
-                switch (EventTimes[occuranceTimes[currentEventIndex]])
-                {
-                    case EventTypes.FlickerLights:
-                        evntC.StartCoroutine(FlickerLights(__instance));
-                        break;
-                    case EventTypes.PowerOutage:
-                        evntC.StartCoroutine(PowerOutage(__instance));
-                        break;
-                }
+                NetworkHandler.Instance.EventClientRPC(EventTimes[occuranceTimes[currentEventIndex]]);
 
 			    currentEventIndex++;
             }
@@ -198,9 +160,6 @@ namespace LethalerComanpany.Patches
                     mls.LogInfo("Event " + evnt.Key + " chosen to happen " + i + " times");
                 }
             }
-
-            // Send Data to Clients
-            SendEventsToClients();
         }
 
         static IEnumerator PowerOutage(RoundManager __instance)
@@ -250,15 +209,12 @@ namespace LethalerComanpany.Patches
         static int currentEventIndex;
         static LungProp apparatice;
 
-        static readonly string eventSignature = "xilohor.lethalercompany.events";
-        Networking.GotStringEventDelegate recieve = ReceivedEventsFromServer;
+        public static List<int> occuranceTimes;
+        public static Dictionary<int, EventTypes> EventTimes { get; set; }
 
-        static List<int> occuranceTimes;
-        static Dictionary<int, EventTypes> EventTimes { get; set; }
-
-        enum EventTypes { None, FlickerLights, PowerOutage, BurstPipes };
+        public enum EventTypes { None, FlickerLights, PowerOutage, BurstPipes };
         static readonly Dictionary<EventTypes, double> eventChances = new() {
-            {EventTypes.FlickerLights, 0.18d}
+            {EventTypes.FlickerLights, 1d}
             }; // Chance out of 1
     }
 } // TODO: add check for lights & add outdoor lights to flicker

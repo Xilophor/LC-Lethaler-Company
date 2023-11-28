@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class NoWeatherPatch

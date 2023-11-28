@@ -2,7 +2,7 @@ using HarmonyLib;
 using LethalerCompany;
 using UnityEngine;
 
-namespace LethalerComanpany.Patches
+namespace LethalerCompany.Patches
 {
     [HarmonyPatch]
     public class SpringManPatch
